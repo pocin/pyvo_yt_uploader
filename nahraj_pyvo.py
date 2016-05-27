@@ -6,7 +6,12 @@ Leverages existing youtube-uploading package https://github.com/tokland/youtube-
 - creates description
 - creates title
 
-Usage:
+Installation
+------------
+see https://github.com/tokland/youtube-upload
+
+Usage
+-----
 $ python3 nahraj_pyvo.py /path/to/folder/containing/yaml/and/video
 
 ! IMPORTANT !
@@ -149,8 +154,10 @@ def upload_video(directory):
     logging.info('Uploading {}'.format(video))
 
     with subprocess.Popen(
-        ['youtube-upload', "--title='{}'".format(title),
-         "--description='{}'".format(description), video],
+        ['youtube-upload',
+         "--title='{}'".format(title),
+         "--description='{}'".format(description),
+         video],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT) as proc:
         for line in proc.stdout:
