@@ -14,6 +14,8 @@ Usage
 -----
 $ python3 nahraj_pyvo.py /path/to/folder/containing/yaml/and/video
 
+Make sure the /path/to/folder/containing/yaml/and/video contains both yaml file and *.MTS video
+
 ! IMPORTANT !
 before the first run on your machine it is necessary to run
 $ youtube-upload --title="DummyVideo" dummy_video.mp4
@@ -66,7 +68,7 @@ def load_metadata(directory):
 
     # IndexError becuase glob returns list
     except (IndexError, FileNotFoundError) as e:
-        logging.error("yaml/yml file in {} was not found."
+        logging.error("yaml/yml file in {} not found."
                       "Make sure it exists and try again.".format(
                           os.path.abspath(directory)))
         logging.error(e)
@@ -87,7 +89,7 @@ def create_video_description(metadata):
         description (str)
     '''
     logging.debug("Creating video description")
-    date = metadata['date'].strftime("%Y-%b-%d")
+    date = metadata['date'].strftime("%Y-%m-%d")
     description = [metadata['event'] + ' ' + date, metadata['url']]
     return '\n'.join(description)
 
@@ -130,7 +132,7 @@ def parse_args():
     if args.verbose:
         logging.basicConfig(level=logging.DEBUG, format=logging_format)
     else:
-        logging.basicConfig(format=logging_format)
+        logging.basicConfig(level=logging.INFO, format=logging_format)
     return args
 
 
@@ -149,19 +151,23 @@ def upload_video(directory):
     metadata = load_metadata(directory)
     description = create_video_description(metadata)
     title = create_video_title(metadata)
-    video = glob.glob(os.path.join(directory, "*.MTS"))[0]
+    try:
+        video = glob.glob(os.path.join(directory, metadata['speaker_vid']))[0]
+    except IndexError:
+        logging.error("Video file {vid} not found in {dir}".format(
+            vid=metadata['speaker_vid'], dir=directory))
+        sys.exit(1)
 
     logging.info('Uploading {}'.format(video))
 
     with subprocess.Popen(
-        ['youtube-upload',
-         "--title='{}'".format(title),
-         "--description='{}'".format(description),
-         video],
+        ['youtube-upload', "--title='{}'".format(title),
+         "--description='{}'".format(description), video],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT) as proc:
         for line in proc.stdout:
             logging.info(line)
+    logging.info("Video sucesfully uploaded")
 
 
 def main():
