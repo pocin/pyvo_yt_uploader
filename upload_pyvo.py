@@ -1,34 +1,4 @@
-#!/usr/bin/env python
-''' A Youtube uploader for videos recorded at Pyvo meetings.
-
-Leverages existing youtube-uploading package https://github.com/tokland/youtube-upload
-- Loads metadata from supplied yaml file
-- creates description
-- creates title
-
-Installation
-------------
-see https://github.com/tokland/youtube-upload
-
-Usage
------
-$ python3 nahraj_pyvo.py /path/to/folder/containing/yaml/and/video
-
-Make sure the /path/to/folder/containing/yaml/and/video contains both yaml file and *.MTS video
-
-! IMPORTANT !
-before the first run on your machine it is necessary to run
-$ youtube-upload --title="DummyVideo" dummy_video.mp4
-manually.
-It will give you url to visit in your browser and you will be
-prompted for verification code in the command line.
-This is required since the underlying youtube-upload uses OAuth2.0.
-
-Every subsequent calls should require no authentication,
-unless your OAuth token expires.
-
-
-'''
+#!/usr/bin/env python3
 import glob
 import os
 import yaml
